@@ -31,9 +31,13 @@ public class CopperHammerItem extends ToolItem {
 
     @Override
     public ActionResult useOnBlock(ItemUsageContext context) {
-        PlayerEntity playerEntity = context.getPlayer();
+        PlayerEntity player = context.getPlayer();
         World world = context.getWorld();
-        if (!world.isClient && playerEntity != null && !this.modifyPreset(!playerEntity.isSneaking(), playerEntity, world.getBlockState(context.getBlockPos()), context.getStack())) {
+        if (!world.isClient && player != null && !player.getItemCooldownManager().isCoolingDown(ModItems.COPPER_HAMMER)) {
+            if (this.modifyPreset(!player.isSneaking(), player, world.getBlockState(context.getBlockPos()), context.getStack())) {
+                player.getItemCooldownManager().set(ModItems.COPPER_HAMMER, 10);
+                return ActionResult.CONSUME;
+            }
             return ActionResult.FAIL;
         }
         return ActionResult.success(world.isClient);
@@ -54,6 +58,7 @@ public class CopperHammerItem extends ToolItem {
         NbtCompound preset = getPreset(state, stack);
         if (preset != null) {
             BlockState newState = NbtHelper.toBlockState(world.createCommandRegistryWrapper(RegistryKeys.BLOCK), preset);
+            // TODO FIX APPLY ILLEGAL BLOCK STATES
             return applyState(player, newState, pos, world, stack,
                     Text.translatable(stack.getTranslationKey() + ".applied_preset").append(Text.translatable(newState.getBlock().getTranslationKey())));
         }
@@ -101,9 +106,11 @@ public class CopperHammerItem extends ToolItem {
         NbtCompound blockStatePresets = stack.getOrCreateSubNbt("block_state_presets");
         String resultMessage;
         if (save) {
+            // TODO ADD GREEN OUTLINE AROUND BLOCK WHEN SAVING
             blockStatePresets.put(blockIdOf(block), NbtHelper.fromBlockState(state));
             resultMessage = ".saved_preset";
         } else {
+            // TODO AND RED OUTLINE WHEN REMOVING PRESET
             blockStatePresets.remove(blockIdOf(block));
             resultMessage = ".removed_preset";
         }
