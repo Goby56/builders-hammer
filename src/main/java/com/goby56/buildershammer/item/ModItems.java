@@ -10,7 +10,7 @@ import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
 
 public class ModItems {
-    public static final Item COPPER_HAMMER = registerItem("copper_hammer", new CopperHammerItem(new FabricItemSettings()));
+    public static final Item COPPER_HAMMER = registerItem("copper_hammer", new CopperHammerItem(ModToolMaterial.COPPER, new FabricItemSettings()));
 
     private static Item registerItem(String name, Item item) {
         return Registry.register(Registries.ITEM, new Identifier(BuildersHammer.MOD_ID, name), item);

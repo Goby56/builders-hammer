@@ -1,8 +1,11 @@
 package com.goby56.buildershammer;
 
+import com.goby56.buildershammer.event.AttackBlockHandler;
 import com.goby56.buildershammer.item.ModItems;
 import net.fabricmc.api.ModInitializer;
 
+import net.fabricmc.fabric.api.event.player.AttackBlockCallback;
+import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.minecraft.item.ItemGroups;
 import org.slf4j.Logger;
@@ -21,5 +24,7 @@ public class BuildersHammer implements ModInitializer {
 		// However, some things (like resources) may still be uninitialized.
 		// Proceed with mild caution.
 		ModItems.register();
+
+		AttackBlockCallback.EVENT.register(new AttackBlockHandler());
 	}
 }
