@@ -23,6 +23,9 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Arrays;
+import java.util.Map;
+
 public class CopperHammerItem extends ToolItem {
 
     public CopperHammerItem(ToolMaterial material, Settings settings) {
@@ -58,7 +61,6 @@ public class CopperHammerItem extends ToolItem {
         NbtCompound preset = getPreset(state, stack);
         if (preset != null) {
             BlockState newState = NbtHelper.toBlockState(world.createCommandRegistryWrapper(RegistryKeys.BLOCK), preset);
-            // TODO FIX APPLY ILLEGAL BLOCK STATES
             return applyState(player, newState, pos, world, stack,
                     Text.translatable(stack.getTranslationKey() + ".applied_preset").append(Text.translatable(newState.getBlock().getTranslationKey())));
         }
@@ -71,13 +73,24 @@ public class CopperHammerItem extends ToolItem {
         return false;
     }
 
+    private static BlockState validateState(BlockState existingState, BlockState suggestedState) {
+        BlockState modifiedState = existingState.getBlock().getDefaultState();
+        for (var property : suggestedState.getProperties()) {
+            if (ChangeableProperties.fromProperty(property) != null) {
+                modifiedState = CopperHammerItem.stateWith(modifiedState, suggestedState, property);
+            } else {
+                modifiedState = CopperHammerItem.stateWith(modifiedState, existingState, property);
+            }
+        }
+        return modifiedState;
+    }
+
     private static boolean applyState(PlayerEntity player, BlockState newState, BlockPos pos, WorldAccess world, ItemStack stack, Text resultMessage) {
         if (newState == null) return false;
-        world.setBlockState(pos, newState, Block.NOTIFY_LISTENERS | Block.FORCE_STATE);
+        world.setBlockState(pos, validateState(world.getBlockState(pos), newState), Block.NOTIFY_LISTENERS | Block.FORCE_STATE);
         stack.damage(1, player, p -> p.sendToolBreakStatus(Hand.MAIN_HAND));
         world.playSound(null, pos, newState.getSoundGroup().getPlaceSound(), SoundCategory.BLOCKS, 1f, 1f);
         sendMessage(player, resultMessage);
-
         return true;
     }
 
@@ -130,6 +143,10 @@ public class CopperHammerItem extends ToolItem {
 
     private static <T> T cycleProperty(Iterable<T> elements, @Nullable T current) {
         return Util.next(elements, current);
+    }
+
+    private static <T extends Comparable<T>> BlockState stateWith(BlockState modifiedState, BlockState newState, Property<T> property) {
+        return modifiedState.with(property, newState.get(property));
     }
 
     private static void sendMessage(PlayerEntity player, Text message) {
