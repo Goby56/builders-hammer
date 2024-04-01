@@ -91,6 +91,7 @@ public class CopperHammerItem extends ToolItem {
         world.setBlockState(pos, validateState(world.getBlockState(pos), newState), Block.NOTIFY_LISTENERS | Block.FORCE_STATE);
         stack.damage(1, player, p -> p.sendToolBreakStatus(Hand.MAIN_HAND));
         world.playSound(null, pos, newState.getSoundGroup().getPlaceSound(), SoundCategory.BLOCKS, 1f, 1f);
+        // TODO REMOVE SOUND IF APPLIED STATE DID NOT CHANGE ANYTHING (E.G ATTACKING GRASS BLOCK)
         sendMessage(player, resultMessage);
         return true;
     }

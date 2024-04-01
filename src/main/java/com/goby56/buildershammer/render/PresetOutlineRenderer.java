@@ -49,7 +49,6 @@ public class PresetOutlineRenderer implements WorldRenderEvents.BeforeBlockOutli
                         outlineColor.r, outlineColor.g, outlineColor.b, outlineColor.a);
                 if (ModUtils.blockPosEquals(targetedBlock, blockPos)) {
                     lookingAtOutline = true;
-                    System.out.println(blockPos);
                 }
             }
         }

@@ -8,11 +8,12 @@
 		"Goby56"
 	],
 	"contact": {
-		"homepage": "https://fabricmc.net/",
-		"sources": "https://github.com/FabricMC/fabric-example-mod"
+		"homepage": "https://modrinth.com/project/builders-hammer",
+		"sources": "https://github.com/Goby56/builders-hammer",
+		"issues": "https://github.com/Goby56/builders-hammer/issues"
 	},
-	"license": "CC0-1.0",
-	"icon": "icon.png",
+	"license": "GPLv3",
+	"icon": "assets/builders-hammer/icon.png",
 	"environment": "*",
 	"entrypoints": {
 		"main": [
@@ -33,6 +34,6 @@
 		"fabric-api": "*"
 	},
 	"suggests": {
-		"another-mod": "*"
+		"another-mod": "wakes"
 	}
 }
