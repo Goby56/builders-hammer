@@ -2,6 +2,7 @@ package com.goby56.buildershammer.item;
 
 import com.goby56.buildershammer.ChangeableProperties;
 import com.goby56.buildershammer.PropertyController;
+import com.goby56.buildershammer.render.PresetOutlineRenderer;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.LivingEntity;
@@ -36,9 +37,9 @@ public class CopperHammerItem extends ToolItem {
     public ActionResult useOnBlock(ItemUsageContext context) {
         PlayerEntity player = context.getPlayer();
         World world = context.getWorld();
-        if (!world.isClient && player != null && !player.getItemCooldownManager().isCoolingDown(ModItems.COPPER_HAMMER)) {
-            if (this.modifyPreset(!player.isSneaking(), player, world.getBlockState(context.getBlockPos()), context.getStack())) {
-                player.getItemCooldownManager().set(ModItems.COPPER_HAMMER, 10);
+        if (!world.isClient && player != null) { // && !player.getItemCooldownManager().isCoolingDown(ModItems.COPPER_HAMMER)) {
+            if (this.modifyPreset(!player.isSneaking(), player, world.getBlockState(context.getBlockPos()), context.getStack(), context.getBlockPos())) {
+                // player.getItemCooldownManager().set(ModItems.COPPER_HAMMER, 10);
                 return ActionResult.CONSUME;
             }
             return ActionResult.FAIL;
@@ -111,7 +112,7 @@ public class CopperHammerItem extends ToolItem {
         return null;
     }
 
-    private boolean modifyPreset(boolean save, PlayerEntity player, BlockState state, ItemStack stack) {
+    private boolean modifyPreset(boolean save, PlayerEntity player, BlockState state, ItemStack stack, BlockPos blockPos) {
         Block block = state.getBlock();
         if (state.getProperties().isEmpty()) {
             return false;
@@ -119,11 +120,11 @@ public class CopperHammerItem extends ToolItem {
         NbtCompound blockStatePresets = stack.getOrCreateSubNbt("block_state_presets");
         String resultMessage;
         if (save) {
-            // TODO ADD GREEN OUTLINE AROUND BLOCK WHEN SAVING
+            PresetOutlineRenderer.addBlockOutline(state, blockPos, PresetOutlineRenderer.OutlineColors.SAVED_PRESET);
             blockStatePresets.put(blockIdOf(block), NbtHelper.fromBlockState(state));
             resultMessage = ".saved_preset";
         } else {
-            // TODO AND RED OUTLINE WHEN REMOVING PRESET
+            PresetOutlineRenderer.addBlockOutline(state, blockPos, PresetOutlineRenderer.OutlineColors.REMOVED_PRESET);
             blockStatePresets.remove(blockIdOf(block));
             resultMessage = ".removed_preset";
         }

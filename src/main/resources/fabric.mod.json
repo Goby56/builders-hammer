@@ -17,6 +17,9 @@
 	"entrypoints": {
 		"main": [
 			"com.goby56.buildershammer.BuildersHammer"
+		],
+		"client" : [
+			"com.goby56.buildershammer.BuildersHammerClient"
 		]
 	},
 	"mixins": [
