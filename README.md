@@ -1,5 +1,5 @@
 # Builder's Hammer
-*Builder's Hammer* is a Minecraft mod that brings the functionality of the creative debug stick into survival Minecraft. It also aims to be more inuitive to use than the debug stick.
+*Builder's Hammer* is a Minecraft mod that brings the functionality of the creative debug stick into survival Minecraft. It also aims to be more intuitive to use than the debug stick.
 
 The mod adds a Copper Hammer (currently uncraftable) that gives the player the ability to change the value of a block state's properties. Only some blocks and their properties are changeable, however. This is to make it more balanced in survival in contrast to the debug stick and to make it more believeable as an item. [Here](https://github.com/Goby56/builders-hammer/blob/main/src/main/java/com/goby56/buildershammer/ChangeableProperties.java) are some of the [supported blocks](https://github.com/Goby56/builders-hammer/blob/main/src/main/java/com/goby56/buildershammer/ChangeableProperties.java) and their properties. Please provide suggestions on blocks to add in the future over on the [issues page](https://github.com/Goby56/builders-hammer/issues)
 
