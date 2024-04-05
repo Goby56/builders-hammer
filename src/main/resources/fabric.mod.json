@@ -21,6 +21,9 @@
 		],
 		"client" : [
 			"com.goby56.buildershammer.BuildersHammerClient"
+		],
+		"fabric-datagen": [
+			"com.goby56.buildershammer.data.ModDataGenerator"
 		]
 	},
 	"mixins": [

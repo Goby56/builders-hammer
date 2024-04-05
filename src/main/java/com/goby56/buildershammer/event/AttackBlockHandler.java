@@ -17,7 +17,6 @@ public class AttackBlockHandler implements AttackBlockCallback {
             if (CopperHammerItem.changeState(player, world.getBlockState(pos), world, pos)) {
                 return ActionResult.SUCCESS;
             }
-            return ActionResult.FAIL;
         }
         return ActionResult.PASS;
     }

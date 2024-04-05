@@ -5,7 +5,7 @@ import com.goby56.buildershammer.PropertyController;
 import com.goby56.buildershammer.render.PresetOutlineRenderer;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.entity.LivingEntity;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.*;
 import net.minecraft.nbt.NbtCompound;
@@ -24,9 +24,6 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Arrays;
-import java.util.Map;
-
 public class CopperHammerItem extends ToolItem {
 
     public CopperHammerItem(ToolMaterial material, Settings settings) {
@@ -40,21 +37,10 @@ public class CopperHammerItem extends ToolItem {
         if (!world.isClient && player != null) { // && !player.getItemCooldownManager().isCoolingDown(ModItems.COPPER_HAMMER)) {
             if (this.modifyPreset(!player.isSneaking(), player, world.getBlockState(context.getBlockPos()), context.getStack(), context.getBlockPos())) {
                 // player.getItemCooldownManager().set(ModItems.COPPER_HAMMER, 10);
-                return ActionResult.CONSUME;
+                return ActionResult.SUCCESS;
             }
-            return ActionResult.FAIL;
         }
-        return ActionResult.success(world.isClient);
-    }
-
-    @Override
-    public boolean canMine(BlockState state, World world, BlockPos pos, PlayerEntity miner) {
-        return false;
-    }
-
-    @Override
-    public boolean allowContinuingBlockBreaking(PlayerEntity player, ItemStack oldStack, ItemStack newStack) {
-        return true;
+        return ActionResult.PASS;
     }
 
     public static boolean changeState(PlayerEntity player, BlockState state, World world, BlockPos pos) {
@@ -91,6 +77,7 @@ public class CopperHammerItem extends ToolItem {
         world.setBlockState(pos, validateState(world.getBlockState(pos), newState), Block.NOTIFY_LISTENERS | Block.FORCE_STATE);
         stack.damage(1, player, p -> p.sendToolBreakStatus(Hand.MAIN_HAND));
         world.playSound(null, pos, newState.getSoundGroup().getPlaceSound(), SoundCategory.BLOCKS, 1f, 1f);
+        MinecraftClient.getInstance().interactionManager.blockBreakingCooldown = 5;
         // TODO REMOVE SOUND IF APPLIED STATE DID NOT CHANGE ANYTHING (E.G ATTACKING GRASS BLOCK)
         sendMessage(player, resultMessage);
         return true;
@@ -115,7 +102,7 @@ public class CopperHammerItem extends ToolItem {
 
     private boolean modifyPreset(boolean save, PlayerEntity player, BlockState state, ItemStack stack, BlockPos blockPos) {
         Block block = state.getBlock();
-        if (state.getProperties().isEmpty()) {
+        if (!shouldCancelOrdinaryInteraction(state)) {
             return false;
         }
         NbtCompound blockStatePresets = stack.getOrCreateSubNbt("block_state_presets");
@@ -131,6 +118,22 @@ public class CopperHammerItem extends ToolItem {
         }
         sendMessage(player, Text.translatable(this.getTranslationKey() + resultMessage).append(Text.translatable(block.getTranslationKey())));
         return true;
+    }
+
+    public static boolean shouldCancelOrdinaryInteraction(BlockState targetedBlock) {
+        if (targetedBlock.getProperties().isEmpty()) {
+            return false;
+        }
+        if (targetedBlock.getProperties().stream().noneMatch(property -> ChangeableProperties.fromProperty(property) != null)) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public boolean canMine(BlockState state, World world, BlockPos pos, PlayerEntity miner) {
+        if (shouldCancelOrdinaryInteraction(state)) return false;
+        return super.canMine(state, world, pos, miner);
     }
 
     private static NbtCompound getPreset(BlockState state, ItemStack stack) {

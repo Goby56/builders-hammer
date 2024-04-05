@@ -1,4 +1,4 @@
 accessWidener v1 named
 
-accessible method net/minecraft/client/network/ClientPlayerInteractionManager sendSequencedPacket (Lnet/minecraft/client/world/ClientWorld;Lnet/minecraft/client/network/SequencedPacketCreator;)V
 accessible method net/minecraft/client/render/WorldRenderer drawCuboidShapeOutline (Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumer;Lnet/minecraft/util/shape/VoxelShape;DDDFFFF)V
+accessible field net/minecraft/client/network/ClientPlayerInteractionManager blockBreakingCooldown I
